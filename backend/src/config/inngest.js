@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
 import { User } from "../models/user.model.js";
 import { connectDB } from "./db.js";
+import { upsertStreamUser } from "./stream.js";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "slack-clone" });
@@ -18,6 +19,11 @@ const syncUser = inngest.createFunction(
           image : image_url,
       }
       await User.create(newUser);
+      await upsertStreamUser({
+        id : newUser?.clerkId?.toString(),
+        name : newUser?.name,
+        image : newUser?.image
+      })
   }
 )
 
@@ -28,6 +34,7 @@ const deleteUserFromDB = inngest.createFunction(
         await connectDB();
         const { id } = event.data;
         await User.findOneAndDelete({ clerkId : id });
+        await deleteStreamUser(id?.toString())
     }
 )
 
