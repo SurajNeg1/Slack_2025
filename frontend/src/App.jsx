@@ -1,28 +1,28 @@
 import React from 'react'
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import {Routes, Route, Navigate} from 'react-router';
+import { Routes, Route, Navigate } from 'react-router';
 import HomePage from './pages/HomePage';
 import AuthPage from './pages/AuthPage';
+import * as Sentry from "@sentry/react";
+
+const SentryRoutes = Sentry.withSentryReactRouterV7Routing(Routes);
 
 const App = () => {
   return (
-   <header>
+    <>
       <SignedIn>
-        <Routes>
+        <SentryRoutes>
           <Route path="/" element={<HomePage />} />
           <Route path="/auth" element={<Navigate to="/" replace />} />
-        </Routes>
-        {/* <UserButton /> */}
+        </SentryRoutes>
       </SignedIn>
       <SignedOut>
-          <Routes>
-         
+        <SentryRoutes>
           <Route path="/auth" element={<AuthPage />} />
-           <Route path="*" element={<Navigate to="/auth" replace />} />
-        </Routes>
-        {/* <SignInButton mode="modal"/> */}
+          <Route path="*" element={<Navigate to="/auth" replace />} />
+        </SentryRoutes>
       </SignedOut>
-    </header>
+    </>
   )
 }
 
