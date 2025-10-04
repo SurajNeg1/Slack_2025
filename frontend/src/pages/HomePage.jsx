@@ -15,10 +15,10 @@ import {
 
 import "../styles/stream-chat-theme.css";
 import { HashIcon, PlusIcon, UsersIcon } from "lucide-react";
-// import CustomChannelPreview from "../components/CustomChannelPreview";
-// import UsersList from "../components/UsersList";
-// import CustomChannelHeader from "../components/CustomChannelHeader";
 import CreateChannelModal from '../components/CreateChannelModal'
+import UsersList from '../components/UsersList'
+import CustomChannelPreview from '../components/CustomChannelPreview'
+import CustomChannelHeader from '../components/CustomChannelHeader'
 
 function HomePage() {
 
@@ -73,12 +73,11 @@ function HomePage() {
                   filters={{ members: { $in: [chatClient?.user?.id] } }}
                   options={{ state: true, watch: true }}
                   Preview={({ channel }) => (
-                    <div></div>
-                    // <CustomChannelPreview
-                    //   channel={channel}
-                    //   activeChannel={activeChannel}
-                    //   setActiveChannel={(channel) => setSearchParams({ channel: channel.id })}
-                    // />
+                    <CustomChannelPreview
+                      channel={channel}
+                      activeChannel={activeChannel}
+                      setActiveChannel={(channel) => setSearchParams({ channel: channel.id })}
+                    />
                   )}
                   List={({ children, loading, error }) => (
                     <div className="channel-sections">
@@ -101,7 +100,7 @@ function HomePage() {
                           <span>Direct Messages</span>
                         </div>
                       </div>
-                      {/* <UsersList activeChannel={activeChannel} /> */}
+                      <UsersList activeChannel={activeChannel} />
                     </div>
                   )}
                 />
@@ -113,7 +112,7 @@ function HomePage() {
           <div className="chat-main">
             <Channel channel={activeChannel}>
               <Window>
-                {/* <CustomChannelHeader /> */}
+                <CustomChannelHeader />
                 <MessageList />
                 <MessageInput />
               </Window>
