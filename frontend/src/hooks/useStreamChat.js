@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { getStreamToken } from "../lib/api";
 import { StreamChat } from "stream-chat";
+import * as Sentry from "@sentry/react";
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
@@ -23,7 +24,7 @@ export const useStreamChat = () => {
     useEffect(() => {
         const init = async () => {
             if (!tokenData?.token & !user) return;
-            
+
             try {
                 const client = StreamChat.getInstance(STREAM_API_KEY);
                 let cancelled = false;
@@ -33,14 +34,17 @@ export const useStreamChat = () => {
                     image: user.imageUrl
                 }, tokenData.token);
 
-                if(!cancelled) setChatClient(client);
+                if (!cancelled) setChatClient(client);
             } catch (error) {
                 console.log("Error connecting to Stream Chat:", error);
-                SentryContextManager.captureException(error,
-                    {
-                        tags: { component: "useStreamChat" }
-                    }
-                );
+                Sentry.captureException(error, {
+                    tags: { component: "useStreamChat" },
+                    extra: {
+                        context: "stream_chat_connection",
+                        userId: user?.id,
+                        streamApiKey: STREAM_API_KEY ? "present" : "missing",
+                    },
+                });
             }
 
         }
@@ -56,5 +60,5 @@ export const useStreamChat = () => {
     }, [tokenData, user]);
 
 
-    return {chatClient, isLoading, error };
+    return { chatClient, isLoading, error };
 }
